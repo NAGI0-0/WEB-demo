@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>MindAR 範例 - AR 音效播放</title>
+  <title>MindAR AR 音效展示</title>
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
   <style>
@@ -14,7 +14,7 @@
   <audio id="audio" src="sakurara.mp3"></audio>
 
   <a-scene
-    mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/examples/image-targets/card.mind"
+    mindar-image="imageTargetSrc: targets01.mind"
     embedded
     color-space="sRGB"
     renderer="colorManagement: true, physicallyCorrectLights"
@@ -26,7 +26,7 @@
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
     <a-entity mindar-image-target="targetIndex: 0">
-      <a-box position="0 0.5 0" color="red" scale="0.5 0.5 0.5"></a-box>
+      <a-plane position="0 0 0" height="1" width="1" color="#ffffff" opacity="0.0"></a-plane>
     </a-entity>
   </a-scene>
 
