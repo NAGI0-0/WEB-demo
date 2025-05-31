@@ -1,32 +1,44 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8" />
     <title>AR 音效展示</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- A-Frame & MindAR 套件 -->
     <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+
     <style>
-      #startButton {
+      body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      #start-button {
         position: absolute;
-        top: 40%;
+        top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        z-index: 999;
-        font-size: 20px;
-        padding: 10px 20px;
-        background-color: #008CBA;
-        color: white;
+        z-index: 2;
+        padding: 1em 2em;
+        font-size: 1.2em;
+        background: #ffb6c1;
         border: none;
         border-radius: 8px;
         cursor: pointer;
       }
     </style>
   </head>
+
   <body>
-    <button id="startButton">點我開始 AR</button>
+    <!-- 啟動按鈕 -->
+    <button id="start-button">點我開始 AR</button>
 
-    <audio id="audio" src="sakurara.mp3"></audio>
+    <!-- 音訊資源 -->
+    <audio id="audio" src="sakurara.mp3" preload="auto"></audio>
 
+    <!-- AR 場景 -->
     <a-scene
       mindar-image="imageTargetSrc: targets01.mind;"
       embedded
@@ -34,6 +46,7 @@
       renderer="colorManagement: true, physicallyCorrectLights"
       vr-mode-ui="enabled: false"
       device-orientation-permission-ui="enabled: true"
+      visible="false"
     >
       <a-assets>
         <a-asset-item id="sound" src="sakurara.mp3"></a-asset-item>
@@ -47,24 +60,28 @@
     </a-scene>
 
     <script>
-      const startButton = document.getElementById("startButton");
-      const sceneEl = document.querySelector("a-scene");
-      const audio = document.getElementById("audio");
+      window.addEventListener("DOMContentLoaded", () => {
+        const startButton = document.querySelector("#start-button");
+        const sceneEl = document.querySelector("a-scene");
+        const audio = document.querySelector("#audio");
 
-      startButton.addEventListener("click", async () => {
-        startButton.style.display = "none";
+        startButton.addEventListener("click", async () => {
+          startButton.style.display = "none"; // 隱藏按鈕
+          sceneEl.setAttribute("visible", "true");
 
-        // 啟動相機
-        await sceneEl.components["mindar-image"].start();
+          await sceneEl.components["mindar-image"].start();
+          console.log("AR 已啟動");
 
-        // 掃描到目標圖示時播放音樂
-        sceneEl.addEventListener("targetFound", () => {
-          audio.play();
-        });
+          sceneEl.addEventListener("targetFound", () => {
+            console.log("找到圖像目標");
+            audio.play();
+          });
 
-        sceneEl.addEventListener("targetLost", () => {
-          audio.pause();
-          audio.currentTime = 0;
+          sceneEl.addEventListener("targetLost", () => {
+            console.log("圖像目標消失");
+            audio.pause();
+            audio.currentTime = 0;
+          });
         });
       });
     </script>
