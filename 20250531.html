@@ -1,60 +1,60 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>AR 音效展示</title>
-    <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
-    <style>
-      body, html { margin: 0; padding: 0; overflow: hidden; height: 100%; }
-      #ar-scene { width: 100vw; height: 100vh; display: none; }
-    </style>
-  </head>
-  <body>
-    <audio id="audio" src="sakurara.mp3"></audio>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MindAR 範例 - AR 音效播放</title>
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    body, html { margin: 0; padding: 0; overflow: hidden; height: 100%; }
+    #ar-scene { width: 100vw; height: 100vh; display: none; }
+  </style>
+</head>
+<body>
+  <audio id="audio" src="sakurara.mp3"></audio>
 
-    <a-scene 
-      mindar-image="imageTargetSrc: targets01.mind;" 
-      embedded 
-      color-space="sRGB" 
-      renderer="colorManagement: true, physicallyCorrectLights" 
-      vr-mode-ui="enabled: false" 
-      device-orientation-permission-ui="enabled: true"
-      loading-screen="enabled: false"
-      id="ar-scene"
-    >
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <a-scene
+    mindar-image="imageTargetSrc: https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.1.4/examples/image-targets/card.mind"
+    embedded
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: true"
+    loading-screen="enabled: false"
+    id="ar-scene"
+  >
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-plane position="0 0 0" height="1" width="1" color="#ffffff" opacity="0.0"></a-plane>
-      </a-entity>
-    </a-scene>
+    <a-entity mindar-image-target="targetIndex: 0">
+      <a-box position="0 0.5 0" color="red" scale="0.5 0.5 0.5"></a-box>
+    </a-entity>
+  </a-scene>
 
-    <script>
-      const sceneEl = document.querySelector("#ar-scene");
-      const audio = document.querySelector("#audio");
+  <script>
+    const sceneEl = document.querySelector("#ar-scene");
+    const audio = document.querySelector("#audio");
 
-      // 顯示畫面、開始 MindAR 掃描
-      window.addEventListener("touchstart", () => {
-        console.log("User touched screen, showing AR scene");
-        sceneEl.style.display = "block";
-      }, { once: true });
+    window.addEventListener("touchstart", () => {
+      console.log("User touched screen, showing AR scene");
+      sceneEl.style.display = "block";
+    }, { once: true });
 
-      sceneEl.addEventListener("renderstart", () => {
-        console.log("MindAR scene started");
+    sceneEl.addEventListener("renderstart", () => {
+      console.log("MindAR scene started");
+    });
+
+    sceneEl.addEventListener("targetFound", () => {
+      console.log("Target found!");
+      audio.play().catch(e => {
+        console.warn("Audio play failed:", e);
       });
+    });
 
-      sceneEl.addEventListener("targetFound", () => {
-        console.log("Target found!");
-        audio.play().catch(e => {
-          console.warn("Audio play failed:", e);
-        });
-      });
-
-      sceneEl.addEventListener("targetLost", () => {
-        console.log("Target lost!");
-        audio.pause();
-        audio.currentTime = 0;
-      });
-    </script>
-  </body>
+    sceneEl.addEventListener("targetLost", () => {
+      console.log("Target lost!");
+      audio.pause();
+      audio.currentTime = 0;
+    });
+  </script>
+</body>
 </html>
