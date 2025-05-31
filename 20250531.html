@@ -5,7 +5,8 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
     <style>
-      body, html { margin: 0; padding: 0; overflow: hidden; }
+      body, html { margin: 0; padding: 0; overflow: hidden; height: 100%; }
+      #ar-scene { width: 100vw; height: 100vh; display: none; }
     </style>
   </head>
   <body>
@@ -20,7 +21,6 @@
       device-orientation-permission-ui="enabled: true"
       loading-screen="enabled: false"
       id="ar-scene"
-      style="display: none;"
     >
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
@@ -33,19 +33,28 @@
       const sceneEl = document.querySelector("#ar-scene");
       const audio = document.querySelector("#audio");
 
-      // 事件綁定一次，分開觸控和目標偵測
+      // 顯示畫面、開始 MindAR 掃描
+      window.addEventListener("touchstart", () => {
+        console.log("User touched screen, showing AR scene");
+        sceneEl.style.display = "block";
+      }, { once: true });
+
+      sceneEl.addEventListener("renderstart", () => {
+        console.log("MindAR scene started");
+      });
+
       sceneEl.addEventListener("targetFound", () => {
-        audio.play();
+        console.log("Target found!");
+        audio.play().catch(e => {
+          console.warn("Audio play failed:", e);
+        });
       });
 
       sceneEl.addEventListener("targetLost", () => {
+        console.log("Target lost!");
         audio.pause();
         audio.currentTime = 0;
       });
-
-      window.addEventListener("touchstart", () => {
-        sceneEl.style.display = "block";
-      }, { once: true });
     </script>
   </body>
 </html>
