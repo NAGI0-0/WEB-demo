@@ -22,10 +22,6 @@
       id="ar-scene"
       style="display: none;"
     >
-      <a-assets>
-        <a-asset-item id="sound" src="sakurara.mp3"></a-asset-item>
-      </a-assets>
-
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
@@ -34,22 +30,21 @@
     </a-scene>
 
     <script>
-      const sceneEl = document.querySelector("a-scene");
+      const sceneEl = document.querySelector("#ar-scene");
       const audio = document.querySelector("#audio");
 
-      // 等使用者觸控一次畫面再啟動
+      // 事件綁定一次，分開觸控和目標偵測
+      sceneEl.addEventListener("targetFound", () => {
+        audio.play();
+      });
+
+      sceneEl.addEventListener("targetLost", () => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+
       window.addEventListener("touchstart", () => {
         sceneEl.style.display = "block";
-
-        sceneEl.addEventListener("targetFound", () => {
-          audio.play();
-        });
-
-        sceneEl.addEventListener("targetLost", () => {
-          audio.pause();
-          audio.currentTime = 0;
-        });
-
       }, { once: true });
     </script>
   </body>
