@@ -1,62 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
     <title>AR 音效展示</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- 套件 -->
     <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-aframe.prod.js"></script>
-
     <style>
-      body, html {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background: black;
-      }
-      #start-button {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 3;
-        padding: 1em 2em;
-        font-size: 1.2em;
-        background: #ffb6c1;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-      #message {
-        color: white;
-        text-align: center;
-        position: absolute;
-        top: 10%;
-        width: 100%;
-        z-index: 2;
-        font-size: 1em;
-      }
+      body, html { margin: 0; padding: 0; overflow: hidden; }
     </style>
   </head>
-
   <body>
-    <div id="message">請點擊下方按鈕啟動 AR</div>
-    <button id="start-button">點我開始 AR</button>
+    <audio id="audio" src="sakurara.mp3"></audio>
 
-    <!-- 音訊 -->
-    <audio id="audio" src="sakurara.mp3" preload="auto"></audio>
-
-    <!-- AR 場景 -->
-    <a-scene
-      mindar-image="imageTargetSrc: targets01.mind;"
-      embedded
-      color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      vr-mode-ui="enabled: false"
+    <a-scene 
+      mindar-image="imageTargetSrc: targets01.mind;" 
+      embedded 
+      color-space="sRGB" 
+      renderer="colorManagement: true, physicallyCorrectLights" 
+      vr-mode-ui="enabled: false" 
       device-orientation-permission-ui="enabled: true"
-      visible="false"
+      loading-screen="enabled: false"
+      id="ar-scene"
+      style="display: none;"
     >
       <a-assets>
         <a-asset-item id="sound" src="sakurara.mp3"></a-asset-item>
@@ -70,48 +34,23 @@
     </a-scene>
 
     <script>
-      window.addEventListener("DOMContentLoaded", () => {
-        const startButton = document.querySelector("#start-button");
-        const sceneEl = document.querySelector("a-scene");
-        const audio = document.querySelector("#audio");
-        const message = document.querySelector("#message");
+      const sceneEl = document.querySelector("a-scene");
+      const audio = document.querySelector("#audio");
 
-        let firstClick = true;
+      // 等使用者觸控一次畫面再啟動
+      window.addEventListener("touchstart", () => {
+        sceneEl.style.display = "block";
 
-        startButton.addEventListener("click", async () => {
-          if (firstClick) {
-            firstClick = false;
-
-            // 解鎖音訊（iOS）
-            audio.play().then(() => {
-              audio.pause();
-              audio.currentTime = 0;
-              message.innerText = "載入中，請稍候…請再點一次開始 AR";
-              startButton.innerText = "再次點擊開始 AR";
-            }).catch((e) => {
-              message.innerText = "音訊初始化失敗：" + e.message;
-            });
-          } else {
-            // 啟動 AR
-            startButton.style.display = "none";
-            message.style.display = "none";
-            sceneEl.setAttribute("visible", "true");
-
-            await sceneEl.components["mindar-image"].start();
-
-            sceneEl.addEventListener("targetFound", () => {
-              console.log("🎯 找到圖卡");
-              audio.play();
-            });
-
-            sceneEl.addEventListener("targetLost", () => {
-              console.log("🕳️ 圖卡消失");
-              audio.pause();
-              audio.currentTime = 0;
-            });
-          }
+        sceneEl.addEventListener("targetFound", () => {
+          audio.play();
         });
-      });
+
+        sceneEl.addEventListener("targetLost", () => {
+          audio.pause();
+          audio.currentTime = 0;
+        });
+
+      }, { once: true });
     </script>
   </body>
 </html>
